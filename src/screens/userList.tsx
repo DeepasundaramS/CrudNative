@@ -4,39 +4,20 @@ import { useState } from "react";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useSelector } from "react-redux";
 
+type RootStackParamList = {
+    UserData: undefined;
+    UserDetails: { user: object }
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 const UserList = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation<NavigationProp>()
     const [search, setSearch] = useState<string>('')
-    const users = [
-        {
-            id: '1',
-            name: 'John Doe',
-            email: 'john@example.com',
-            status: 'Active',
-            phone_number: '9345245345',
-            joined_date: '10-07-2026',
-            role: 'admin'
-        },
-        {
-            id: '2',
-            name: 'Sarah Wilson',
-            email: 'sarah@example.com',
-            status: 'Active',
-            phone_number: '9345245345',
-            joined_date: '10-07-2026',
-            role: 'user'
-        },
-        {
-            id: '3',
-            name: 'David Brown',
-            email: 'david@example.com',
-            status: 'Inactive',
-            phone_number: '9345245345',
-            joined_date: '10-07-2026',
-            role: 'user'
-        },
-    ]
+    const admin = useSelector((state: any) => state?.auth?.loginUser)
+    const users = admin?.users
     return (
         <SafeAreaView className="flex-1 px-5 bg-white gap-8">
             <Header
@@ -75,12 +56,6 @@ const UserList = () => {
                                 <Image
                                     style={{ width: 50, height: 50, resizeMode: "center" }}
                                     source={require('../assets/images/Male.png')} />
-                                {/* <MaterialIcons
-                                    name="person"
-                                    size={40}
-                                    color="#6366F1"
-                                /> */}
-                                
                             </View>
                             <View>
                                 <Text className="font-semibold text-[20px]">

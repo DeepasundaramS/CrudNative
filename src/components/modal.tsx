@@ -1,22 +1,34 @@
 import { Modal, Text, TouchableOpacity, View } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+export type Props = {
+    visible: Boolean,
+    icon: string,
+    Title: string,
+    MessageOne: string,
+    MessageTwo: string,
+    accept: () => void,
+    reject: () => void,
+    btnOne: string,
+    btnTwo: string
+};
+
 const ModalPopup = ({
-    visible = '',
-    icon = '',
-    Title = '',
-    MessageOne = '',
-    MessageTwo = '',
-    accept = '',
-    reject = '',
-    btnOne = '',
-    btnTwo = '' }: any) => {
+    visible,
+    icon,
+    Title,
+    MessageOne,
+    MessageTwo,
+    accept,
+    reject,
+    btnOne,
+    btnTwo }: Props) => {
     return (
         <>
             <Modal
                 animationType="slide"
                 transparent={true}
-                visible={visible}>
+                visible={Boolean(visible)}>
                 <View className="absolute w-full h-full z-30 bg-gray-500 opacity-[50%]"></View>
                 <View className="absolute z-40 bottom-0 bg-white h-[40%] w-full rounded-xl">
                     <View className="items-center justify-between h-full pt-8">

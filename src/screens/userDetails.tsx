@@ -5,39 +5,78 @@ import Header from "../components/header";
 import { useState } from "react";
 import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from "react-redux";
+import { userInfo } from "../store/slices/authSlice";
 
-const UserDetails = (route: any) => {
-    const navigation = useNavigation()
+type RootStackParamList = {
+    Dashboard: { screen: string }
+    UserData: { user: object }
+};
+
+type UserDetailsProps = {
+    route: {
+        params: {
+            user: {
+                id: string,
+                name: string,
+                email: string,
+                status: string,
+                phone_number: string,
+                joined_date: string,
+                role: string
+            };
+        };
+    };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
+const UserDetails = ({ route }: UserDetailsProps) => {
+    const navigation = useNavigation<NavigationProp>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
-    const user = route?.params?.user
+    const users = useSelector((state: any) => state?.auth?.users)
+    const admin = useSelector((state: any) => state?.auth?.loginUser)
+    const dispatch = useDispatch()
+    const user = route.params.user
+
+    const handleDelete = () => {
+        const updatedUsers = users?.filter((users: any) => users?.id !== user?.id)
+        const updatedUserData = users?.map((adminUser: any) =>
+            adminUser?.id === admin?.id ? {
+                ...adminUser,
+                users: updatedUsers
+            } : adminUser);
+        const updatedAdmin = { ...admin, users: updatedUsers }
+
+        dispatch(userInfo(updatedUserData))
+        dispatch(admin(updatedAdmin))
+        navigation.navigate('Dashboard', { screen: 'Users' })
+    }
     return (
         <SafeAreaView className="flex-1 gap-5 bg-white px-5">
             <Header
                 iconOne="arrow-back"
                 title="User Details"
+                iconTwo=""
             />
             <View className="items-center gap-8">
                 <View>
                     <Image
                         style={{ width: 140, height: 140, resizeMode: "center" }}
                         source={require('../assets/images/Male.png')} />
-                    {/* <MaterialIcons
-                        name="person"
-                        size={70}
-                        color="#6366F1"
-                    /> */}
                 </View>
                 <View className="items-center gap-4">
-                    <Text className="font-bold text-3xl">{user.name}</Text>
-                    <View className={`px-3 rounded-full ${user.status === 'Active'
+                    <Text className="font-bold text-3xl">{user?.name}</Text>
+                    <View className={`px-3 rounded-full ${user?.status === 'Active'
                         ? 'bg-green-100'
                         : 'bg-red-100'
                         }`}>
-                        <Text className={`text-lg font-semibold ${user.status === 'Active'
+                        <Text className={`text-lg font-semibold ${user?.status === 'Active'
                             ? 'text-green-600'
                             : 'text-red-600'
                             }`}>
-                            {user.status}
+                            {user?.status}
                         </Text>
                     </View>
                 </View>
@@ -53,7 +92,7 @@ const UserDetails = (route: any) => {
                             />
                             <Text className="text-xl font-medium">Email</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">{user.email}</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user?.email}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5 border border-white border-b-gray-300">
                         <View className="flex-row items-center gap-6">
@@ -64,7 +103,7 @@ const UserDetails = (route: any) => {
                             />
                             <Text className="text-xl font-medium">Phone</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">{user.phone_number}</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user?.phone_number}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5 border border-white border-b-gray-300">
                         <View className="flex-row items-center gap-6">
@@ -75,7 +114,7 @@ const UserDetails = (route: any) => {
                             />
                             <Text className="text-xl font-medium">Role</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">{user.role}</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user?.role}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5">
                         <View className="flex-row items-center gap-6">
@@ -86,7 +125,7 @@ const UserDetails = (route: any) => {
                             />
                             <Text className="text-xl font-medium">Joined On</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">{user.joined_date}</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user?.joined_date}</Text>
                     </View>
                 </View>
             </View>
@@ -111,7 +150,7 @@ const UserDetails = (route: any) => {
                 btnOne="Cancel"
                 btnTwo="Delete"
                 reject={() => setModalVisible(!modalVisible)}
-                accept={() => navigation.navigate('Dashboard', { screen: 'Users' })}
+                accept={() => handleDelete}
             />
         </SafeAreaView>
     );

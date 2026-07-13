@@ -6,15 +6,36 @@ import React, { useMemo, useState } from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
 import { regexValidation, validationErrors } from "../util/validationMsg";
-import { useDispatch } from "react-redux";
-import { userinfo } from "../store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { userInfo } from "../store/slices/authSlice";
+
+type RootStackParamList = {
+    Dashboard: { screen: string }
+}
+type NavigationProp = StackNavigationProp<RootStackParamList>
+
+type UserDataProps = {
+    route: {
+        params: {
+            user: {
+                id: string
+                name: string,
+                email: string,
+                phone_number: string,
+                role: string,
+                status: string
+            }
+        }
+    }
+}
 
 const data = [
     { label: '--- Select Role ---', value: '1' },
     { label: 'Admin', value: '2' },
     { label: 'User', value: '3' }
-];
+]
 
 const styles = StyleSheet.create({
     labelStyle: {
@@ -23,13 +44,14 @@ const styles = StyleSheet.create({
     }
 })
 
-const UserData = (route: any) => {
-    const navigation = useNavigation()
+const UserData = ({ route }: UserDataProps) => {
     const dispatch = useDispatch()
+    const users = useSelector((state: any) => state?.auth?.users)
+    const admin = useSelector((state: any) => state?.auth?.loginUser)
+    const navigation = useNavigation<NavigationProp>()
     const editUser = route?.params?.user
-    const role = editUser.role === 'user' ? '3' : editUser.role === 'admin' ? '2' : '1'
-    const status = editUser.status === 'Active' ? '1' : '2'
-    const isEdit = !!editUser
+    const role = editUser?.role === 'user' ? '3' : editUser?.role === 'admin' ? '2' : '1'
+    const status = editUser?.status === 'Active' ? '1' : '2'
 
     const [user, setUser] = useState({
         first_name: editUser?.name || "",
@@ -76,22 +98,35 @@ const UserData = (route: any) => {
         } else if (!selectedId.trim()) {
             Alert.alert("Validation Error", validationErrors.status.required)
         } else {
-            if (isEdit) {
-                dispatch(userinfo({
-                    first_name: user.first_name,
-                    email: user?.email,
-                    phone_number: user?.phone_number,
-                    role: value,
-                    status: selectedId
-                }))
+            if (editUser) {
+                const updatedUser = users.map((adminUser: any) =>
+                    adminUser.id === admin.id ? {
+                        ...adminUser,
+                        users: adminUser.users.map((user: any) => user.id === editUser.id ? {
+                            ...user,
+                            first_name: user.first_name,
+                            email: user?.email,
+                            phone_number: user?.phone_number,
+                            role: value,
+                            status: selectedId
+                        } : user),
+                    } : adminUser);
+                dispatch(userInfo(updatedUser))
             } else {
-                dispatch(userinfo({
-                    first_name: user.first_name,
-                    email: user?.email,
-                    phone_number: user?.phone_number,
-                    role: value,
-                    status: selectedId
-                }))
+                const newUsers = users.map((adminUser: any) =>
+                    adminUser.id === admin.id ? {
+                        ...adminUser,
+                        users: [...(adminUser.users || []),
+                        {
+                            id: Date.now(),
+                            first_name: user.first_name,
+                            email: user?.email,
+                            phone_number: user?.phone_number,
+                            role: value,
+                            status: selectedId
+                        },]
+                    } : adminUser);
+                dispatch(userInfo(newUsers))
             }
             navigation.navigate('Dashboard', { screen: 'Users' })
         }
@@ -100,18 +135,14 @@ const UserData = (route: any) => {
         <SafeAreaView className="flex-1 bg-white gap-5 justify-between px-5">
             <Header
                 iconOne="arrow-back"
-                title={isEdit ? "Edit User" : "Add User"}
+                title={editUser ? "Edit User" : "Add User"}
+                iconTwo=""
             />
             <View className="items-center">
                 <View>
                     <Image
                         style={{ width: 140, height: 140, resizeMode: "center" }}
                         source={require('../assets/images/Male.png')} />
-                    {/* <MaterialIcons
-                        name="person"
-                        size={70}
-                        color="#6366F1"
-                    /> */}
                     <TouchableOpacity className="w-10 h-10 rounded-full items-center justify-center absolute bottom-0 right-0 bg-[#6366F1]">
                         <MaterialIcons
                             name="photo-camera"
@@ -125,7 +156,7 @@ const UserData = (route: any) => {
                 <View>
                     <Text className="font-bold text-xl mb-2">Full Name</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
-                        value={user.first_name}
+                        value={user?.first_name}
                         onChangeText={(text) => handleChange('first_name', text)}
                         placeholder="Enter Full Name"
                     />
@@ -133,7 +164,7 @@ const UserData = (route: any) => {
                 <View>
                     <Text className="font-bold text-xl mb-2">Email</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
-                        value={user.email}
+                        value={user?.email}
                         onChangeText={(text) => handleChange('email', text)}
                         placeholder="Enter email"
                     />
@@ -141,7 +172,7 @@ const UserData = (route: any) => {
                 <View>
                     <Text className="font-bold text-xl mb-2">Phone Number</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
-                        value={user.phone_number}
+                        value={user?.phone_number}
                         onChangeText={(text) => handleChange('phone_number', text)}
                         placeholder="Enter Phone Number"
                     />
@@ -162,7 +193,7 @@ const UserData = (route: any) => {
                     <Text className="font-bold text-xl mb-2">Status</Text>
                     <RadioGroup
                         layout="row"
-                        labelStyle={styles.labelStyle}
+                        labelStyle={styles?.labelStyle}
                         radioButtons={radioButtons}
                         onPress={setSelectedId}
                         selectedId={selectedId}
@@ -173,7 +204,7 @@ const UserData = (route: any) => {
                 <TouchableOpacity
                     onPress={handleSubmit}
                     className="bg-[#6366F1] p-4 rounded-2xl">
-                    <Text className="text-white text-2xl font-bold text-center">{isEdit ? "Update User" : "Save User"}</Text>
+                    <Text className="text-white text-2xl font-bold text-center">{editUser ? "Update User" : "Save User"}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

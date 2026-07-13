@@ -7,15 +7,23 @@ import SettingsOptions from "../components/settingsOptions";
 import HrLine from "../components/hrLine";
 import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+    Login: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Settings = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation<NavigationProp>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
     return (
         <SafeAreaView className="flex-1 gap-8 bg-white px-5">
             <Header
                 iconOne="menu"
                 title="Settings"
+                iconTwo=""
             />
             <View>
                 <Text className="text-xl">General</Text>

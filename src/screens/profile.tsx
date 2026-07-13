@@ -12,6 +12,7 @@ const Profile = () => {
             <Header
                 iconOne="menu"
                 title="Profile"
+                iconTwo=""
             />
             <View className="items-center gap-8">
                 <View>

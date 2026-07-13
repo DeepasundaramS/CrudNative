@@ -3,13 +3,21 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Icon from '@react-native-vector-icons/fontawesome-free-solid'
 import { useState } from "react"
-import { useDispatch } from "react-redux"
-import { register } from "../store/slices/authSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { userInfo } from "../store/slices/authSlice"
 import { regexValidation, validationErrors } from "../util/validationMsg"
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+    Login: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Register = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation<NavigationProp>()
+    const users = useSelector((state: any) => state.auth.users)
     const dispatch = useDispatch();
     const [form, setForm] = useState({
         username: '',
@@ -45,12 +53,14 @@ const Register = () => {
         } else if (form.password !== form.confirmPassword) {
             Alert.alert("Validation Error", validationErrors.confirmpassword.matchPassword)
         } else {
-            dispatch(register({
-                UserName: form.username,
-                Email: form.email,
-                Password: form.password,
-                Role: 'Administrator',
-            }))
+            const updatedUsers = [...users || [], {
+                id: Date.now(),
+                userName: form.username,
+                email: form.email,
+                password: form.password,
+                role: 'Administrator',
+            }]
+            dispatch(userInfo(updatedUsers))
             navigation.navigate('Login')
         }
     }
@@ -66,7 +76,7 @@ const Register = () => {
                 <TextInput className="p-3 border-gray-500 border rounded-xl text-lg"
                     value={form.username}
                     onChangeText={(text) => handleChange('username', text)}
-                    placeholder="Enter your email"
+                    placeholder="Enter your Name"
                 />
             </View>
             <View className=" w-full px-7 gap-2">
@@ -101,7 +111,7 @@ const Register = () => {
                     <TextInput className="flex-1 text-gray-500 p-3 text-lg"
                         value={form.confirmPassword}
                         onChangeText={(text) => handleChange('confirmPassword', text)}
-                        placeholder="Enter your password"
+                        placeholder="Enter your Confirm Password"
                         secureTextEntry={!confirmPasswordVisible}
                     />
                     <TouchableOpacity className="pe-5" onPress={() => setconfirmPasswordVisible(!confirmPasswordVisible)}>

@@ -5,12 +5,20 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from '@react-native-vector-icons/fontawesome-free-solid';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../store/slices/authSlice";
+import { admin } from "../store/slices/authSlice";
 import { validationErrors } from "../util/validationMsg";
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+    Dashboard: undefined,
+    Register: undefined
+}
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Login = () => {
-    const user = useSelector((state) => state?.auth?.user)
-    const navigation = useNavigation()
+    const users = useSelector((state: any) => state?.auth?.users)
+    const navigation = useNavigation<NavigationProp>()
     const dispatch = useDispatch()
     const [loginUser, setLoginUser] = useState({
         email: '',
@@ -26,15 +34,15 @@ const Login = () => {
         })
     }
     const handleSubmit = () => {
-        // const findMatch = user?.find((user:any) => user?.email === loginUser?.email && user?.password === loginUser?.password)
+        const findMatch = users?.find((user: any) => user?.email === loginUser?.email && user?.password === loginUser?.password)
         if (!loginUser?.email?.trim()) {
             Alert.alert("Validation Error", validationErrors.email.required)
         } else if (!loginUser?.password?.trim()) {
             Alert.alert("Validation Error", validationErrors.password.required)
-        // } else if (!findMatch) {
-            // Alert.alert("Validation Error", validationErrors.common.Mismatch)
+        } else if (!findMatch) {
+            Alert.alert("Validation Error", validationErrors.common.Mismatch)
         } else {
-            dispatch(login(loginUser))
+            dispatch(admin(findMatch))
             navigation.navigate('Dashboard')
         }
     }

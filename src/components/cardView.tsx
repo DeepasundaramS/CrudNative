@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export type Props = {
+type Props = {
     title: string;
     value: string;
     icon: string;

@@ -5,30 +5,20 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CardView from '../components/cardView';
 import Header from '../components/header';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useSelector } from 'react-redux';
 
-const users = [
-    {
-        id: '1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        status: 'Active',
-    },
-    {
-        id: '2',
-        name: 'Sarah Wilson',
-        email: 'sarah@example.com',
-        status: 'Active',
-    },
-    {
-        id: '3',
-        name: 'David Brown',
-        email: 'david@example.com',
-        status: 'Inactive',
-    }
-];
+type RootStackParamList = {
+    Users: undefined,
+    UserDetails: { user: object }
+}
+
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Users'>;
 
 const DashBoard = () => {
-    const navigation = useNavigation()
+    const admin = useSelector((state: any) => state?.auth?.loginUser)
+    const navigation = useNavigation<NavigationProp>()
+    const users = admin?.users
     return (
         <SafeAreaView className="flex-1 px-5 bg-white gap-8">
             <Header
@@ -102,18 +92,13 @@ const DashBoard = () => {
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            onPress={() => navigation.navigate('UserDetails')}
+                            onPress={() => navigation.navigate('UserDetails', { user: item })}
                             className="items-center flex-row justify-between py-3">
                             <View className='items-center flex-row justify-around gap-6'>
                                 <View>
                                     <Image
                                         style={{ width: 50, height: 50, resizeMode: "center" }}
                                         source={require('../assets/images/Male.png')} />
-                                    {/* <MaterialIcons
-                                        name="person"
-                                        size={32}
-                                        color="#6366F1"
-                                    /> */}
                                 </View>
                                 <View className="">
                                     <Text className="font-bold text-xl">

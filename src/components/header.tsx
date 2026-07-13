@@ -2,11 +2,12 @@ import { Text, TouchableOpacity, View } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
-export type Props = {
-    iconOne: string
-    title: string
-    iconTwo: string
-};
+type Props = {
+    iconOne: string;
+    iconTwo: string;
+    title: string;
+}
+
 const Header = ({ iconOne, title, iconTwo }: Props) => {
     const navigation = useNavigation()
     const onBack = () => {
