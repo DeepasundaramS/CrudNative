@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
-const SplashScreen = ({ navigation }: any) => {
-
+const SplashScreen = () => {
+    const navigation = useNavigation()
     useEffect(() => {
         setTimeout(() => {
             navigation.replace('Login');

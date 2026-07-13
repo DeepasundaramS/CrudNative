@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const SettingsOptions = ({ iconOne = "", optionOne = "", optionTwo = "", functionality = () => { } }: any) => {
+const SettingsOptions = ({ iconOne, optionOne, optionTwo, functionality}: any) => {
     return (
         <>
             <TouchableOpacity

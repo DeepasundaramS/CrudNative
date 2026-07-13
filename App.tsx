@@ -1,7 +1,9 @@
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import React from 'react';
+import { Provider } from 'react-redux';
 import RouterNavigation from './src/navigations/routerNavigation';
+import { store } from './src/store/store';
+import React from 'react';
 import './global.css'
 
 const App = () => {
@@ -10,7 +12,9 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <RouterNavigation />
+      <Provider store={store}>
+        <RouterNavigation />
+      </Provider>
     </SafeAreaProvider>
   );
 }

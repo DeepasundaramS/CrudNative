@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CardView from '../components/cardView';
 import Header from '../components/header';
+import { useNavigation } from '@react-navigation/native';
 
 const users = [
     {
@@ -26,7 +27,8 @@ const users = [
     }
 ];
 
-const DashBoard = ({ navigation }: any) => {
+const DashBoard = () => {
+    const navigation = useNavigation()
     return (
         <SafeAreaView className="flex-1 px-5 bg-white gap-8">
             <Header

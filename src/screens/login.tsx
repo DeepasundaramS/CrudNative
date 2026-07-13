@@ -1,11 +1,43 @@
 import { useState } from "react";
-import { Text, View, TouchableOpacity, TextInput } from "react-native"
+import { useNavigation } from '@react-navigation/native';
+import { Text, View, TouchableOpacity, TextInput, Alert } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from '@react-native-vector-icons/fontawesome-free-solid';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../store/slices/authSlice";
+import { validationErrors } from "../util/validationMsg";
 
-const Login = ({ navigation }: any) => {
-    const [passwordVisible, setPasswordVisible] = useState(false);
+const Login = () => {
+    const user = useSelector((state) => state?.auth?.user)
+    const navigation = useNavigation()
+    const dispatch = useDispatch()
+    const [loginUser, setLoginUser] = useState({
+        email: '',
+        password: ''
+    })
+    const [passwordVisible, setPasswordVisible] = useState<Boolean>(false);
+    const handleChange = (field: string, value: string) => {
+        setLoginUser(prev => {
+            return {
+                ...prev,
+                [field]: value
+            }
+        })
+    }
+    const handleSubmit = () => {
+        // const findMatch = user?.find((user:any) => user?.email === loginUser?.email && user?.password === loginUser?.password)
+        if (!loginUser?.email?.trim()) {
+            Alert.alert("Validation Error", validationErrors.email.required)
+        } else if (!loginUser?.password?.trim()) {
+            Alert.alert("Validation Error", validationErrors.password.required)
+        // } else if (!findMatch) {
+            // Alert.alert("Validation Error", validationErrors.common.Mismatch)
+        } else {
+            dispatch(login(loginUser))
+            navigation.navigate('Dashboard')
+        }
+    }
     return (
         <SafeAreaView className="bg-white flex-1 items-center gap-8 justify-center">
             <MaterialIcons name="person-pin" size={70} color="#ffffff" className="bg-[#6366F1] rounded-3xl p-4" />
@@ -16,6 +48,8 @@ const Login = ({ navigation }: any) => {
             <View className=" w-full px-7 gap-2">
                 <Text className="font-bold text-lg">Email</Text>
                 <TextInput className="p-3 border-gray-500 border rounded-xl text-lg"
+                    value={loginUser.email}
+                    onChangeText={(text) => handleChange('email', text)}
                     placeholder="Enter your email"
                 />
             </View>
@@ -23,6 +57,8 @@ const Login = ({ navigation }: any) => {
                 <Text className="font-bold text-lg">Password</Text>
                 <View className="flex-row items-center border border-gray-500 rounded-xl overflow-hidden">
                     <TextInput className="flex-1 text-gray-500 p-3 text-lg"
+                        value={loginUser.password}
+                        onChangeText={(text) => handleChange('password', text)}
                         placeholder="Enter your password"
                         secureTextEntry={!passwordVisible}
                     />
@@ -39,13 +75,17 @@ const Login = ({ navigation }: any) => {
                 <Text className="font-bold text-lg text-[#885CF6] text-right">Forgot Password?</Text>
             </TouchableOpacity>
             <View className="w-full px-7">
-                <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}
-                    className="bg-[#6366F1] flex items-center p-4 justify-center rounded-xl">
+                <TouchableOpacity onPress={handleSubmit}
+                    className="bg-[#6366F1] items-center p-4 justify-center rounded-xl">
                     <Text className="font-semibold text-center text-white text-xl" >Login</Text>
                 </TouchableOpacity>
             </View>
-            <View className="flex flex-row items-center">
-                <Text className="font-bold text-lg text-gray-500">Don't have an account? <Text className="font-bold text-[#885CF6]"> Contact Admin</Text></Text>
+            <View className="flex-row items-center gap-3">
+                <Text className="font-bold text-lg text-gray-500">Don't have an account?
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <Text className="font-bold text-lg text-[#885CF6]">Sign Up</Text>
+                </TouchableOpacity>
             </View >
         </SafeAreaView>
     )

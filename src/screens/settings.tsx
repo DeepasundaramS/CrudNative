@@ -6,9 +6,11 @@ import { useState } from "react";
 import SettingsOptions from "../components/settingsOptions";
 import HrLine from "../components/hrLine";
 import ModalPopup from "../components/modal";
+import { useNavigation } from '@react-navigation/native';
 
-const Settings = ({ navigation }: any) => {
-    const [modalVisible, setModalVisible] = useState(false);
+const Settings = () => {
+    const navigation = useNavigation()
+    const [modalVisible, setModalVisible] = useState<Boolean>(false);
     return (
         <SafeAreaView className="flex-1 gap-8 bg-white px-5">
             <Header
@@ -41,7 +43,7 @@ const Settings = ({ navigation }: any) => {
             <View>
                 <Text className="text-xl">Security</Text>
                 <View className="w-full items-center justify-between pt-4">
-                    <View className="w-full h-auto felx-column border border-gray-400 rounded-xl px-5">
+                    <View className="w-full h-auto flex-column border border-gray-400 rounded-xl px-5">
                         <SettingsOptions
                             iconOne="lock-outline"
                             optionOne="Change Password"

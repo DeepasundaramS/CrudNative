@@ -4,9 +4,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
 import { useState } from "react";
 import ModalPopup from "../components/modal";
+import { useNavigation } from '@react-navigation/native';
 
-const UserDetails = ({ navigation }: any) => {
-    const [modalVisible, setModalVisible] = useState(false);
+const UserDetails = (route: any) => {
+    const navigation = useNavigation()
+    const [modalVisible, setModalVisible] = useState<Boolean>(false);
+    const user = route?.params?.user
     return (
         <SafeAreaView className="flex-1 gap-5 bg-white px-5">
             <Header
@@ -24,13 +27,23 @@ const UserDetails = ({ navigation }: any) => {
                         color="#6366F1"
                     /> */}
                 </View>
-                <View className="flex items-center gap-4">
-                    <Text className="font-bold text-3xl">User Name</Text>
-                    <Text className="rounded-full bg-green-100 text-lg font-semibold text-green-600 px-3">Active</Text>
+                <View className="items-center gap-4">
+                    <Text className="font-bold text-3xl">{user.name}</Text>
+                    <View className={`px-3 rounded-full ${user.status === 'Active'
+                        ? 'bg-green-100'
+                        : 'bg-red-100'
+                        }`}>
+                        <Text className={`text-lg font-semibold ${user.status === 'Active'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                            }`}>
+                            {user.status}
+                        </Text>
+                    </View>
                 </View>
             </View>
             <View className="w-full items-center justify-between h-[55%] pt-4 gap-2">
-                <View className="w-full h-auto felx-column border border-gray-300 rounded-xl px-5">
+                <View className="w-full h-auto flex-column border border-gray-300 rounded-xl px-5">
                     <View className="flex-row justify-between items-center w-full py-5 border border-white border-b-gray-300">
                         <View className="flex-row items-center gap-6">
                             <MaterialIcons
@@ -40,7 +53,7 @@ const UserDetails = ({ navigation }: any) => {
                             />
                             <Text className="text-xl font-medium">Email</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">user@example.com</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user.email}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5 border border-white border-b-gray-300">
                         <View className="flex-row items-center gap-6">
@@ -51,7 +64,7 @@ const UserDetails = ({ navigation }: any) => {
                             />
                             <Text className="text-xl font-medium">Phone</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">+1234 567 8900</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user.phone_number}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5 border border-white border-b-gray-300">
                         <View className="flex-row items-center gap-6">
@@ -62,7 +75,7 @@ const UserDetails = ({ navigation }: any) => {
                             />
                             <Text className="text-xl font-medium">Role</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">user role</Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user.role}</Text>
                     </View>
                     <View className="flex-row justify-between items-center w-full py-5">
                         <View className="flex-row items-center gap-6">
@@ -73,13 +86,13 @@ const UserDetails = ({ navigation }: any) => {
                             />
                             <Text className="text-xl font-medium">Joined On</Text>
                         </View>
-                        <Text className="text-lg font-semibold text-gray-500">joined date </Text>
+                        <Text className="text-lg font-semibold text-gray-500">{user.joined_date}</Text>
                     </View>
                 </View>
             </View>
             <View className="flex-row gap-4 items-center pb-10">
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('UserData', { user: "Deepak" })}
+                    onPress={() => navigation.navigate('UserData', { user: user })}
                     className="border-2 border-[#6366F1] p-3 rounded-xl w-[48%]" >
                     <Text className="text-[#6366F1] text-center font-bold text-xl">Edit User</Text>
                 </TouchableOpacity>

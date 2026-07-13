@@ -19,8 +19,8 @@ const ModalPopup = ({
                 visible={visible}>
                 <View className="absolute w-full h-full z-30 bg-gray-500 opacity-[50%]"></View>
                 <View className="absolute z-40 bottom-0 bg-white h-[40%] w-full rounded-xl">
-                    <View className="flex items-center justify-between h-full pt-8">
-                        <View className="flex items-center gap-4">
+                    <View className="items-center justify-between h-full pt-8">
+                        <View className="items-center gap-4">
                             <View className="rounded-full bg-[#FFD6D6] w-24 h-24 items-center justify-center">
                                 <MaterialIcons name={icon} color="#FF3737" size={35} />
                             </View>

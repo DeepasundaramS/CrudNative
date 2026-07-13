@@ -3,27 +3,38 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useState } from "react";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
+import { useNavigation } from '@react-navigation/native';
 
-const UserList = ({ navigation }: any) => {
-    const [search, setSearch] = useState('')
+const UserList = () => {
+    const navigation = useNavigation()
+    const [search, setSearch] = useState<string>('')
     const users = [
         {
             id: '1',
             name: 'John Doe',
             email: 'john@example.com',
             status: 'Active',
+            phone_number: '9345245345',
+            joined_date: '10-07-2026',
+            role: 'admin'
         },
         {
             id: '2',
             name: 'Sarah Wilson',
             email: 'sarah@example.com',
             status: 'Active',
+            phone_number: '9345245345',
+            joined_date: '10-07-2026',
+            role: 'user'
         },
         {
             id: '3',
             name: 'David Brown',
             email: 'david@example.com',
             status: 'Inactive',
+            phone_number: '9345245345',
+            joined_date: '10-07-2026',
+            role: 'user'
         },
     ]
     return (
@@ -57,7 +68,7 @@ const UserList = ({ navigation }: any) => {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('UserDetails')}
+                        onPress={() => navigation.navigate('UserDetails', { user: item })}
                         className="items-center flex-row justify-between mb-6">
                         <View className="flex-row items-center gap-5">
                             <View>
@@ -69,6 +80,7 @@ const UserList = ({ navigation }: any) => {
                                     size={40}
                                     color="#6366F1"
                                 /> */}
+                                
                             </View>
                             <View>
                                 <Text className="font-semibold text-[20px]">

@@ -1,10 +1,14 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header"
 import React, { useMemo, useState } from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
+import { regexValidation, validationErrors } from "../util/validationMsg";
+import { useDispatch } from "react-redux";
+import { userinfo } from "../store/slices/authSlice";
+import { useNavigation } from '@react-navigation/native';
 
 const data = [
     { label: '--- Select Role ---', value: '1' },
@@ -16,16 +20,24 @@ const styles = StyleSheet.create({
     labelStyle: {
         fontSize: 18,
         fontWeight: 'bold'
-    },
-    container: {
     }
 })
 
-const UserData = ({ navigation, route }: any) => {
-    const editUser = route.params?.user
+const UserData = (route: any) => {
+    const navigation = useNavigation()
+    const dispatch = useDispatch()
+    const editUser = route?.params?.user
+    const role = editUser.role === 'user' ? '3' : editUser.role === 'admin' ? '2' : '1'
+    const status = editUser.status === 'Active' ? '1' : '2'
     const isEdit = !!editUser
-    const [value, setValue] = useState('1');
-    const [selectedId, setSelectedId] = useState("");
+
+    const [user, setUser] = useState({
+        first_name: editUser?.name || "",
+        email: editUser?.email || "",
+        phone_number: editUser?.phone_number || "",
+    })
+    const [value, setValue] = useState(role || '1');
+    const [selectedId, setSelectedId] = useState(status || "");
     const radioButtons = useMemo(() => ([
         {
             id: '1',
@@ -39,6 +51,51 @@ const UserData = ({ navigation, route }: any) => {
         }
     ]), []);
 
+    const handleChange = (field: string, value: string) => {
+        setUser((prev) => ({
+            ...prev,
+            [field]: value
+        }))
+    }
+
+    const handleSubmit = () => {
+        if (!user?.first_name?.trim()) {
+            Alert.alert("Validation Error", validationErrors.name.required)
+        } else if (regexValidation.regex.nameRegex.test(user?.first_name)) {
+            Alert.alert("Validation Error", validationErrors.name.InvalidName)
+        } else if (!user?.email?.trim()) {
+            Alert.alert("Validation Error", validationErrors.email.required)
+        } else if (!regexValidation.regex.invalidEmailRegex.test(user?.email)) {
+            Alert.alert("Validation Error", validationErrors.email.validEmail)
+        } else if (!user?.phone_number?.trim()) {
+            Alert.alert("Validation Error", validationErrors.phone_number.required)
+        } else if (!regexValidation.regex.invalidPhoneNumberRegex.test(user?.phone_number)) {
+            Alert.alert("Validation Error", validationErrors.phone_number.InvalidPhonenumber)
+        } else if (!value.trim()) {
+            Alert.alert("Validation Error", validationErrors.role.required)
+        } else if (!selectedId.trim()) {
+            Alert.alert("Validation Error", validationErrors.status.required)
+        } else {
+            if (isEdit) {
+                dispatch(userinfo({
+                    first_name: user.first_name,
+                    email: user?.email,
+                    phone_number: user?.phone_number,
+                    role: value,
+                    status: selectedId
+                }))
+            } else {
+                dispatch(userinfo({
+                    first_name: user.first_name,
+                    email: user?.email,
+                    phone_number: user?.phone_number,
+                    role: value,
+                    status: selectedId
+                }))
+            }
+            navigation.navigate('Dashboard', { screen: 'Users' })
+        }
+    }
     return (
         <SafeAreaView className="flex-1 bg-white gap-5 justify-between px-5">
             <Header
@@ -46,12 +103,15 @@ const UserData = ({ navigation, route }: any) => {
                 title={isEdit ? "Edit User" : "Add User"}
             />
             <View className="items-center">
-                <View className="w-40 h-40 rounded-full bg-gray-100 justify-center items-center">
-                    <MaterialIcons
+                <View>
+                    <Image
+                        style={{ width: 140, height: 140, resizeMode: "center" }}
+                        source={require('../assets/images/Male.png')} />
+                    {/* <MaterialIcons
                         name="person"
                         size={70}
                         color="#6366F1"
-                    />
+                    /> */}
                     <TouchableOpacity className="w-10 h-10 rounded-full items-center justify-center absolute bottom-0 right-0 bg-[#6366F1]">
                         <MaterialIcons
                             name="photo-camera"
@@ -65,18 +125,24 @@ const UserData = ({ navigation, route }: any) => {
                 <View>
                     <Text className="font-bold text-xl mb-2">Full Name</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
+                        value={user.first_name}
+                        onChangeText={(text) => handleChange('first_name', text)}
                         placeholder="Enter Full Name"
                     />
                 </View>
                 <View>
                     <Text className="font-bold text-xl mb-2">Email</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
+                        value={user.email}
+                        onChangeText={(text) => handleChange('email', text)}
                         placeholder="Enter email"
                     />
                 </View>
                 <View>
                     <Text className="font-bold text-xl mb-2">Phone Number</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
+                        value={user.phone_number}
+                        onChangeText={(text) => handleChange('phone_number', text)}
                         placeholder="Enter Phone Number"
                     />
                 </View>
@@ -84,7 +150,6 @@ const UserData = ({ navigation, route }: any) => {
                     <Text className="font-bold text-xl mb-2">Role</Text>
                     <TouchableOpacity className="p-4 border-gray-500 border rounded-xl text-xl">
                         <Dropdown
-                            itemContainerStyle={styles.container}
                             data={data}
                             labelField="label"
                             valueField="value"
@@ -106,7 +171,7 @@ const UserData = ({ navigation, route }: any) => {
             </View>
             <View className="w-full px-2">
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('Dashboard', { screen: 'Users' })}
+                    onPress={handleSubmit}
                     className="bg-[#6366F1] p-4 rounded-2xl">
                     <Text className="text-white text-2xl font-bold text-center">{isEdit ? "Update User" : "Save User"}</Text>
                 </TouchableOpacity>
