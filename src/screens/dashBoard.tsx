@@ -17,6 +17,7 @@ type NavigationProp = StackNavigationProp<RootStackParamList, 'Users'>;
 
 const DashBoard = () => {
     const admin = useSelector((state: any) => state?.auth?.loginUser)
+    const registeredUser = useSelector((state: any) => state?.auth?.users)
     const navigation = useNavigation<NavigationProp>()
     const users = admin?.users
     return (
@@ -33,7 +34,7 @@ const DashBoard = () => {
                             Total Users
                         </Text>
                         <Text className="font-semibold text-5xl text-white">
-                            125
+                            {users?.length ? users.length : "0"}
                         </Text>
                         <Text className="text-xl text-white">
                             +12 this month
@@ -50,25 +51,25 @@ const DashBoard = () => {
             <View className='flex-row flex-wrap items-center justify-between gap-y-6'>
                 <CardView
                     title="Active Users"
-                    value="96"
+                    value={users?.filter((user: { status: string }) => user.status === "Active")?.length || 0}
                     icon="person"
                     color="#22C55E"
                 />
                 <CardView
                     title="Inactive Users"
-                    value="29"
+                    value={users?.filter((user: { status: string }) => user.status === "InActive")?.length || 0}
                     icon="person-off"
                     color="#EF4444"
                 />
                 <CardView
                     title="Admins"
-                    value="08"
+                    value={registeredUser?.length || 0}
                     icon="admin-panel-settings"
                     color="#6366F1"
                 />
                 <CardView
                     title="New This Month"
-                    value="15"
+                    value={users?.length || 0}
                     icon="recycling"
                     color="#F59E0B"
                 />

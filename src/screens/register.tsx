@@ -55,10 +55,10 @@ const Register = () => {
         } else {
             const updatedUsers = [...users || [], {
                 id: Date.now(),
-                userName: form.username,
+                name: form.username,
                 email: form.email,
                 password: form.password,
-                role: 'Administrator',
+                role: 'Admin',
             }]
             dispatch(userInfo(updatedUsers))
             navigation.navigate('Login')

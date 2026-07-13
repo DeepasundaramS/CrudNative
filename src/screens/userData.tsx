@@ -9,7 +9,7 @@ import { regexValidation, validationErrors } from "../util/validationMsg";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { userInfo } from "../store/slices/authSlice";
+import { adminUser, userInfo } from "../store/slices/authSlice";
 
 type RootStackParamList = {
     Dashboard: { screen: string }
@@ -32,9 +32,8 @@ type UserDataProps = {
 }
 
 const data = [
-    { label: '--- Select Role ---', value: '1' },
-    { label: 'Admin', value: '2' },
-    { label: 'User', value: '3' }
+    { label: '--- Select Role ---', value: 'none' },
+    { label: 'User', value: 'User' }
 ]
 
 const styles = StyleSheet.create({
@@ -50,26 +49,22 @@ const UserData = ({ route }: UserDataProps) => {
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const navigation = useNavigation<NavigationProp>()
     const editUser = route?.params?.user
-    const role = editUser?.role === 'user' ? '3' : editUser?.role === 'admin' ? '2' : '1'
-    const status = editUser?.status === 'Active' ? '1' : '2'
 
     const [user, setUser] = useState({
-        first_name: editUser?.name || "",
+        name: editUser?.name || "",
         email: editUser?.email || "",
         phone_number: editUser?.phone_number || "",
     })
-    const [value, setValue] = useState(role || '1');
-    const [selectedId, setSelectedId] = useState(status || "");
+    const [value, setValue] = useState(editUser?.role || 'none');
+    const [selectedId, setSelectedId] = useState(editUser?.status || "InActive");
     const radioButtons = useMemo(() => ([
         {
-            id: '1',
+            id: 'Active',
             label: 'Active',
-            value: 'active'
         },
         {
-            id: '2',
+            id: 'InActive',
             label: 'InActive',
-            value: 'inactive'
         }
     ]), []);
 
@@ -80,10 +75,16 @@ const UserData = ({ route }: UserDataProps) => {
         }))
     }
 
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
     const handleSubmit = () => {
-        if (!user?.first_name?.trim()) {
+        if (!user?.name?.trim()) {
             Alert.alert("Validation Error", validationErrors.name.required)
-        } else if (regexValidation.regex.nameRegex.test(user?.first_name)) {
+        } else if (regexValidation.regex.nameRegex.test(user?.name)) {
             Alert.alert("Validation Error", validationErrors.name.InvalidName)
         } else if (!user?.email?.trim()) {
             Alert.alert("Validation Error", validationErrors.email.required)
@@ -100,32 +101,38 @@ const UserData = ({ route }: UserDataProps) => {
         } else {
             if (editUser) {
                 const updatedUser = users.map((adminUser: any) =>
-                    adminUser.id === admin.id ? {
+                    adminUser?.id === admin?.id ? {
                         ...adminUser,
-                        users: adminUser.users.map((user: any) => user.id === editUser.id ? {
-                            ...user,
-                            first_name: user.first_name,
+                        users: adminUser?.users?.map((users: { id: string }) => users?.id === editUser?.id ? {
+                            ...users,
+                            name: user?.name,
                             email: user?.email,
                             phone_number: user?.phone_number,
                             role: value,
-                            status: selectedId
-                        } : user),
+                            status: selectedId,
+                            joined_date: formattedDate
+                        } : users),
                     } : adminUser);
+                const updatedAdmin = updatedUser?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
+                dispatch(adminUser(updatedAdmin))
                 dispatch(userInfo(updatedUser))
             } else {
-                const newUsers = users.map((adminUser: any) =>
-                    adminUser.id === admin.id ? {
+                const newUsers = users?.map((adminUser: any) =>
+                    adminUser?.id === admin?.id ? {
                         ...adminUser,
                         users: [...(adminUser.users || []),
                         {
                             id: Date.now(),
-                            first_name: user.first_name,
+                            name: user?.name,
                             email: user?.email,
                             phone_number: user?.phone_number,
                             role: value,
-                            status: selectedId
+                            status: selectedId,
+                            joined_date: formattedDate
                         },]
                     } : adminUser);
+                const updatedAdminData = newUsers?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
+                dispatch(adminUser(updatedAdminData))
                 dispatch(userInfo(newUsers))
             }
             navigation.navigate('Dashboard', { screen: 'Users' })
@@ -156,8 +163,8 @@ const UserData = ({ route }: UserDataProps) => {
                 <View>
                     <Text className="font-bold text-xl mb-2">Full Name</Text>
                     <TextInput className="p-4 border-gray-500 border rounded-xl text-xl"
-                        value={user?.first_name}
-                        onChangeText={(text) => handleChange('first_name', text)}
+                        value={user?.name}
+                        onChangeText={(text) => handleChange('name', text)}
                         placeholder="Enter Full Name"
                     />
                 </View>

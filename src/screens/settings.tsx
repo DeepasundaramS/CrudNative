@@ -8,6 +8,8 @@ import HrLine from "../components/hrLine";
 import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch } from "react-redux";
+import { logout } from "../store/slices/authSlice";
 
 type RootStackParamList = {
     Login: undefined;
@@ -16,8 +18,13 @@ type RootStackParamList = {
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Settings = () => {
+    const dispatch = useDispatch()
     const navigation = useNavigation<NavigationProp>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
+    const handleLogout = () => {
+        dispatch(logout(false))
+        navigation.navigate('Login')
+    }
     return (
         <SafeAreaView className="flex-1 gap-8 bg-white px-5">
             <Header
@@ -84,7 +91,7 @@ const Settings = () => {
                 btnOne="Cancel"
                 btnTwo="Logout"
                 reject={() => setModalVisible(!modalVisible)}
-                accept={() => navigation.navigate('Login')}
+                accept={handleLogout}
             />
         </SafeAreaView >
     )

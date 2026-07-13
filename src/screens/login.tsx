@@ -5,12 +5,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from '@react-native-vector-icons/fontawesome-free-solid';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { admin } from "../store/slices/authSlice";
+import { adminUser, isAuth } from "../store/slices/authSlice";
 import { validationErrors } from "../util/validationMsg";
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
-    Dashboard: undefined,
+    Home: undefined,
     Register: undefined
 }
 
@@ -42,8 +42,9 @@ const Login = () => {
         } else if (!findMatch) {
             Alert.alert("Validation Error", validationErrors.common.Mismatch)
         } else {
-            dispatch(admin(findMatch))
-            navigation.navigate('Dashboard')
+            dispatch(adminUser(findMatch))
+            dispatch(isAuth(true))
+            navigation.navigate('Home')
         }
     }
     return (

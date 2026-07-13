@@ -7,7 +7,7 @@ import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from "react-redux";
-import { userInfo } from "../store/slices/authSlice";
+import { adminUser, userInfo } from "../store/slices/authSlice";
 
 type RootStackParamList = {
     Dashboard: { screen: string }
@@ -33,24 +33,24 @@ type UserDetailsProps = {
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const UserDetails = ({ route }: UserDetailsProps) => {
+    const dispatch = useDispatch()
     const navigation = useNavigation<NavigationProp>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
-    const users = useSelector((state: any) => state?.auth?.users)
+    const registeredUser = useSelector((state: any) => state?.auth?.users)
     const admin = useSelector((state: any) => state?.auth?.loginUser)
-    const dispatch = useDispatch()
-    const user = route.params.user
+    const user = route?.params?.user
 
     const handleDelete = () => {
-        const updatedUsers = users?.filter((users: any) => users?.id !== user?.id)
-        const updatedUserData = users?.map((adminUser: any) =>
-            adminUser?.id === admin?.id ? {
+        const updatedUsers = admin?.users?.filter((users: { id: string }) => users?.id !== user?.id)
+        const updatedUserData = registeredUser?.map((adminUser: any) =>
+            Number(adminUser?.id) === Number(admin?.id) ? {
                 ...adminUser,
                 users: updatedUsers
             } : adminUser);
         const updatedAdmin = { ...admin, users: updatedUsers }
 
         dispatch(userInfo(updatedUserData))
-        dispatch(admin(updatedAdmin))
+        dispatch(adminUser(updatedAdmin))
         navigation.navigate('Dashboard', { screen: 'Users' })
     }
     return (
@@ -145,12 +145,12 @@ const UserDetails = ({ route }: UserDetailsProps) => {
                 visible={modalVisible}
                 icon="delete-outline"
                 Title="Delete User ?"
-                MessageOne="Are you sure you want to Delete"
+                MessageOne={`Are you sure you want to Delete user ${user?.name}`}
                 MessageTwo="This action cannot be undone."
                 btnOne="Cancel"
                 btnTwo="Delete"
                 reject={() => setModalVisible(!modalVisible)}
-                accept={() => handleDelete}
+                accept={handleDelete}
             />
         </SafeAreaView>
     );
