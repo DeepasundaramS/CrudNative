@@ -5,36 +5,13 @@ import Header from "../components/header";
 import { useState } from "react";
 import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from "react-redux";
 import { adminUser, userInfo } from "../store/slices/authSlice";
+import { storage } from "../util/storage";
 
-type RootStackParamList = {
-    Dashboard: { screen: string }
-    UserData: { user: object }
-};
-
-type UserDetailsProps = {
-    route: {
-        params: {
-            user: {
-                id: string,
-                name: string,
-                email: string,
-                status: string,
-                phone_number: string,
-                joined_date: string,
-                role: string
-            };
-        };
-    };
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
-
-const UserDetails = ({ route }: UserDetailsProps) => {
+const UserDetails = ({ route }: any) => {
     const dispatch = useDispatch()
-    const navigation = useNavigation<NavigationProp>()
+    const navigation = useNavigation<any>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
     const registeredUser = useSelector((state: any) => state?.auth?.users)
     const admin = useSelector((state: any) => state?.auth?.loginUser)
@@ -51,7 +28,9 @@ const UserDetails = ({ route }: UserDetailsProps) => {
 
         dispatch(userInfo(updatedUserData))
         dispatch(adminUser(updatedAdmin))
-        navigation.navigate('Dashboard', { screen: 'Users' })
+        storage.setItem("loginedUser", updatedAdmin)
+        storage.setItem("SignupedUser", updatedUserData)
+        navigation.navigate('Home', { screen: 'Users' })
     }
     return (
         <SafeAreaView className="flex-1 gap-5 bg-white px-5">

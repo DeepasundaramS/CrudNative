@@ -11,24 +11,23 @@ import { useSelector } from "react-redux";
 const Stack = createNativeStackNavigator();
 
 const RouterNavigation = () => {
-    const isAuth = useSelector((state: any) => state.auth.isAuthenticated)
+    const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);
     return (
         <>
             <NavigationContainer>
-                {isAuth ?
-                    (
-                        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="Splash" component={SplashScreen} />
-                            <Stack.Screen name="Login" component={Login} />
-                            <Stack.Screen name="Register" component={Register} />
-                        </Stack.Navigator>
-                    ) : (
-                        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="Home" component={BottomTapNavigation} />
-                            <Stack.Screen name='UserData' component={UserData} />
-                            <Stack.Screen name='UserDetails' component={UserDetails} />
-                        </Stack.Navigator>
-                    )}
+                {isAuthenticated ? (
+                    <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="Home" component={BottomTapNavigation} />
+                        <Stack.Screen name="UserData" component={UserData} />
+                        <Stack.Screen name="UserDetails" component={UserDetails} />
+                    </Stack.Navigator>
+                ) : (
+                    <Stack.Navigator initialRouteName="SplahScreen" screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="SplahScreen" component={SplashScreen} />
+                        <Stack.Screen name="Login" component={Login} />
+                        <Stack.Screen name="Register" component={Register} />
+                    </Stack.Navigator>
+                )}
             </NavigationContainer>
         </>
     )

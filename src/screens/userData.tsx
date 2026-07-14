@@ -8,28 +8,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { regexValidation, validationErrors } from "../util/validationMsg";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { adminUser, userInfo } from "../store/slices/authSlice";
-
-type RootStackParamList = {
-    Dashboard: { screen: string }
-}
-type NavigationProp = StackNavigationProp<RootStackParamList>
-
-type UserDataProps = {
-    route: {
-        params: {
-            user: {
-                id: string
-                name: string,
-                email: string,
-                phone_number: string,
-                role: string,
-                status: string
-            }
-        }
-    }
-}
+import { storage } from "../util/storage";
 
 const data = [
     { label: '--- Select Role ---', value: 'none' },
@@ -43,11 +23,11 @@ const styles = StyleSheet.create({
     }
 })
 
-const UserData = ({ route }: UserDataProps) => {
+const UserData = ({ route }: any) => {
     const dispatch = useDispatch()
-    const users = useSelector((state: any) => state?.auth?.users)
     const admin = useSelector((state: any) => state?.auth?.loginUser)
-    const navigation = useNavigation<NavigationProp>()
+    const users = useSelector((state: any) => state?.auth?.users)
+    const navigation = useNavigation<any>()
     const editUser = route?.params?.user
 
     const [user, setUser] = useState({
@@ -116,6 +96,8 @@ const UserData = ({ route }: UserDataProps) => {
                 const updatedAdmin = updatedUser?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
                 dispatch(adminUser(updatedAdmin))
                 dispatch(userInfo(updatedUser))
+                storage.setItem("loginedUser", updatedAdmin)
+                storage.setItem("SignupedUser", updatedUser)
             } else {
                 const newUsers = users?.map((adminUser: any) =>
                     adminUser?.id === admin?.id ? {
@@ -134,8 +116,10 @@ const UserData = ({ route }: UserDataProps) => {
                 const updatedAdminData = newUsers?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
                 dispatch(adminUser(updatedAdminData))
                 dispatch(userInfo(newUsers))
+                storage.setItem("loginedUser", updatedAdminData)
+                storage.setItem("SignupedUser", newUsers)
             }
-            navigation.navigate('Dashboard', { screen: 'Users' })
+            navigation.navigate('Home', { screen: 'Users' })
         }
     }
     return (

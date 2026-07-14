@@ -4,17 +4,10 @@ import { useState } from "react";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector } from "react-redux";
 
-type RootStackParamList = {
-    UserData: undefined;
-    UserDetails: { user: object }
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 const UserList = () => {
-    const navigation = useNavigation<NavigationProp>()
+    const navigation = useNavigation<any>()
     const [search, setSearch] = useState<string>('')
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const users = admin?.users

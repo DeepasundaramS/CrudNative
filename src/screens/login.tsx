@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { Text, View, TouchableOpacity, TextInput, Alert } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -7,18 +7,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { adminUser, isAuth } from "../store/slices/authSlice";
 import { validationErrors } from "../util/validationMsg";
-import { StackNavigationProp } from '@react-navigation/stack';
-
-type RootStackParamList = {
-    Home: undefined,
-    Register: undefined
-}
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+import { storage } from "../util/storage";
 
 const Login = () => {
     const users = useSelector((state: any) => state?.auth?.users)
-    const navigation = useNavigation<NavigationProp>()
+    const navigation = useNavigation<any>()
     const dispatch = useDispatch()
     const [loginUser, setLoginUser] = useState({
         email: '',
@@ -44,13 +37,15 @@ const Login = () => {
         } else {
             dispatch(adminUser(findMatch))
             dispatch(isAuth(true))
-            navigation.navigate('Home')
+            storage.setItem("IsAuthenticated", true)
+            storage.setItem("loginedUser", findMatch)
+            navigation.navigate('Home', { screen: 'Dashboard' })
         }
     }
     return (
         <SafeAreaView className="bg-white flex-1 items-center gap-8 justify-center">
             <MaterialIcons name="person-pin" size={70} color="#ffffff" className="bg-[#6366F1] rounded-3xl p-4" />
-            <View className="flex items-center gap-2 justify-center">
+            <View className="items-center gap-2 justify-center">
                 <Text className="text-4xl text-black font-bold">Welcome Back 👋</Text>
                 <Text className="text-gray-500 font-semibold text-2xl">Login to your admin account</Text>
             </View>

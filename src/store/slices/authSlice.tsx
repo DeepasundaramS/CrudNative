@@ -1,14 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Storage } from "../../util/storage";
-
-const SignupedUser = Storage.getItem("SignupedUser")
-const LoginedUser = Storage.getItem("loginedUser")
-const isauthenticate = Storage.getItem("isAuthenticated")
 
 const initialState = {
-    users: SignupedUser || [],
-    loginUser: LoginedUser || {},
-    isAuthenticated: isauthenticate || false
+    users: [],
+    loginUser: {},
+    isAuthenticated: false
 };
 
 const authSlice = createSlice({
@@ -17,20 +12,16 @@ const authSlice = createSlice({
     reducers: {
         userInfo: (state, action) => {
             state.users = action.payload
-            Storage.setItem("SignupedUser", action.payload)
         },
         adminUser: (state, action) => {
             state.loginUser = action.payload
-            Storage.setItem("loginedUser", action.payload)
         },
         isAuth: (state, action) => {
             state.isAuthenticated = action.payload
-            Storage.setItem("isAuthenticated", action.payload)
         },
-        logout: (state, action) => {
-            state.isAuthenticated = action.payload
-            Storage.removeItem("isAuthenticated")
-            Storage.removeItem("loginedUser")
+        logout: (state) => {
+            state.isAuthenticated = false
+            state.loginUser = {}
         }
     },
 });

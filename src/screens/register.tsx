@@ -7,17 +7,18 @@ import { useDispatch, useSelector } from "react-redux"
 import { userInfo } from "../store/slices/authSlice"
 import { regexValidation, validationErrors } from "../util/validationMsg"
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+// import { StackNavigationProp } from '@react-navigation/stack';
+import { storage } from "../util/storage"
 
-type RootStackParamList = {
-    Login: undefined;
-};
+// type RootStackParamList = {
+//     Login: undefined;
+// };
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+// type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Register = () => {
-    const navigation = useNavigation<NavigationProp>()
     const users = useSelector((state: any) => state.auth.users)
+    const navigation = useNavigation<any>()
     const dispatch = useDispatch();
     const [form, setForm] = useState({
         username: '',
@@ -35,7 +36,7 @@ const Register = () => {
         }))
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!form?.username?.trim()) {
             Alert.alert("Validation Error", validationErrors.name.required)
         } else if (regexValidation.regex.nameRegex.test(form?.username)) {
@@ -61,6 +62,7 @@ const Register = () => {
                 role: 'Admin',
             }]
             dispatch(userInfo(updatedUsers))
+            await storage.setItem("SignupedUser", updatedUsers)
             navigation.navigate('Login')
         }
     }
@@ -68,7 +70,7 @@ const Register = () => {
     return (
         <SafeAreaView className="bg-white flex-1 items-center gap-8 justify-center">
             <MaterialIcons name="person-pin" size={70} color="#ffffff" className="bg-[#6366F1] rounded-3xl p-4" />
-            <View className="flex items-center gap-2 justify-center">
+            <View className="items-center gap-2 justify-center">
                 <Text className="text-4xl text-black font-bold">Sign Up</Text>
             </View>
             <View className=" w-full px-7 gap-2">

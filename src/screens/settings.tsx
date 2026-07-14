@@ -1,30 +1,29 @@
-import { Modal, Text, TouchableOpacity, View } from "react-native"
+import { Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import Header from "../components/header"
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useState } from "react";
 import SettingsOptions from "../components/settingsOptions";
 import HrLine from "../components/hrLine";
 import ModalPopup from "../components/modal";
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch } from "react-redux";
 import { logout } from "../store/slices/authSlice";
+import { storage } from "../util/storage";
+import { persistor } from '../store/store';
 
-type RootStackParamList = {
-    Login: undefined;
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const Settings = () => {
     const dispatch = useDispatch()
-    const navigation = useNavigation<NavigationProp>()
+    const navigation = useNavigation<any>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
-    const handleLogout = () => {
-        dispatch(logout(false))
+    const handleLogout = async () => {
+        dispatch(logout())
+        storage.removeItem("loginedUser")
+        storage.setItem("IsAuthenticated", false)
         navigation.navigate('Login')
-    }
+        await persistor.purge();
+    };
+
     return (
         <SafeAreaView className="flex-1 gap-8 bg-white px-5">
             <Header

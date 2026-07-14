@@ -28,7 +28,7 @@ const Profile = () => {
                         />
                     </TouchableOpacity>
                 </View>
-                <View className="flex items-center gap-4">
+                <View className="items-center gap-4">
                     <Text className="font-bold text-3xl">{admin.name}</Text>
                     <Text className="font-semibold text-xl text-[#6B7280]">{admin.email}</Text>
                     <Text className="rounded-full bg-green-100 text-lg font-semibold text-green-600 px-3">{admin.role}</Text>
