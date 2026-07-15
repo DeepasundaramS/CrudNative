@@ -7,18 +7,15 @@ import { useDispatch, useSelector } from "react-redux"
 import { userInfo } from "../store/slices/authSlice"
 import { regexValidation, validationErrors } from "../util/validationMsg"
 import { useNavigation } from '@react-navigation/native';
-// import { StackNavigationProp } from '@react-navigation/stack';
 import { storage } from "../util/storage"
+import { RootStackParamList } from "../util/types"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
-// type RootStackParamList = {
-//     Login: undefined;
-// };
-
-// type NavigationProp = StackNavigationProp<RootStackParamList>;
+type RegisterNavigationProps = NativeStackNavigationProp<RootStackParamList>
 
 const Register = () => {
     const users = useSelector((state: any) => state.auth.users)
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<RegisterNavigationProps>()
     const dispatch = useDispatch();
     const [form, setForm] = useState({
         username: '',

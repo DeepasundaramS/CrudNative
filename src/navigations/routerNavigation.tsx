@@ -7,8 +7,9 @@ import UserDetails from "../screens/userDetails";
 import UserData from "../screens/userData";
 import Register from "../screens/register";
 import { useSelector } from "react-redux";
+import { RootStackParamList } from "../util/types";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RouterNavigation = () => {
     const isAuthenticated = useSelector((state: any) => state.auth.isAuthenticated);

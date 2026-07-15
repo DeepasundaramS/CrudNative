@@ -5,9 +5,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from "react-redux";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../util/types";
+
+type UserListNavigationProps = NativeStackNavigationProp<RootStackParamList>
 
 const UserList = () => {
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<UserListNavigationProps>()
     const [search, setSearch] = useState<string>('')
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const users = admin?.users

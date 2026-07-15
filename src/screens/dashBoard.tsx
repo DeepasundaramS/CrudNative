@@ -6,12 +6,15 @@ import CardView from '../components/cardView';
 import Header from '../components/header';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../util/types';
 
+type DashboardNavigationProps = NativeStackNavigationProp<RootStackParamList>
 
 const DashBoard = () => {
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const registeredUser = useSelector((state: any) => state?.auth?.users)
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<DashboardNavigationProps>()
     const users = admin?.users
     return (
         <SafeAreaView className="flex-1 px-5 bg-white gap-8">

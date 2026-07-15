@@ -11,6 +11,7 @@ export const validationErrors = {
     name: {
         required: "UserName is required",
         InvalidName: "Enter a valid UserName",
+        FullNameValidation: "Enter a valid Full Name"
     },
     email: {
         required: "Email is required",
@@ -40,7 +41,7 @@ export const validationErrors = {
     },
     phone_number: {
         required: "Phone Number is Required",
-        InvalidPhonenumber:'Enter a valid phone number'
+        InvalidPhonenumber: 'Enter a valid phone number'
     },
     status: {
         required: "Status in Required"

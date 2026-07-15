@@ -4,20 +4,28 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Header from "../components/header";
 import { useState } from "react";
 import ModalPopup from "../components/modal";
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from "react-redux";
 import { adminUser, userInfo } from "../store/slices/authSlice";
 import { storage } from "../util/storage";
+import { RootStackParamList } from "../util/types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-const UserDetails = ({ route }: any) => {
+type UserDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>
+type UserDetailsRouteProp = RouteProp<RootStackParamList, 'UserDetails'>
+type Props = {
+    route: UserDetailsRouteProp;
+};
+
+const UserDetails = ({ route }: Props) => {
     const dispatch = useDispatch()
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<UserDetailsNavigationProp>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
     const registeredUser = useSelector((state: any) => state?.auth?.users)
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const user = route?.params?.user
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
         const updatedUsers = admin?.users?.filter((users: { id: string }) => users?.id !== user?.id)
         const updatedUserData = registeredUser?.map((adminUser: any) =>
             Number(adminUser?.id) === Number(admin?.id) ? {
@@ -28,8 +36,8 @@ const UserDetails = ({ route }: any) => {
 
         dispatch(userInfo(updatedUserData))
         dispatch(adminUser(updatedAdmin))
-        storage.setItem("loginedUser", updatedAdmin)
-        storage.setItem("SignupedUser", updatedUserData)
+        await storage.setItem("loginedUser", updatedAdmin)
+        await storage.setItem("SignupedUser", updatedUserData)
         navigation.navigate('Home', { screen: 'Users' })
     }
     return (

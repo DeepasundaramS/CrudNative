@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { Text, View, TouchableOpacity, TextInput, Alert } from "react-native"
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -8,10 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { adminUser, isAuth } from "../store/slices/authSlice";
 import { validationErrors } from "../util/validationMsg";
 import { storage } from "../util/storage";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../util/types";
+
+type LoginNavigationProps = NativeStackNavigationProp<RootStackParamList>
 
 const Login = () => {
     const users = useSelector((state: any) => state?.auth?.users)
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<LoginNavigationProps>()
     const dispatch = useDispatch()
     const [loginUser, setLoginUser] = useState({
         email: '',
@@ -26,7 +30,7 @@ const Login = () => {
             }
         })
     }
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const findMatch = users?.find((user: any) => user?.email === loginUser?.email && user?.password === loginUser?.password)
         if (!loginUser?.email?.trim()) {
             Alert.alert("Validation Error", validationErrors.email.required)
@@ -37,9 +41,8 @@ const Login = () => {
         } else {
             dispatch(adminUser(findMatch))
             dispatch(isAuth(true))
-            storage.setItem("IsAuthenticated", true)
-            storage.setItem("loginedUser", findMatch)
-            navigation.navigate('Home', { screen: 'Dashboard' })
+            await storage.setItem("IsAuthenticated", true)
+            await storage.setItem("loginedUser", findMatch)
         }
     }
     return (

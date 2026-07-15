@@ -5,23 +5,17 @@ import { useState } from "react";
 import SettingsOptions from "../components/settingsOptions";
 import HrLine from "../components/hrLine";
 import ModalPopup from "../components/modal";
-import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from "react-redux";
 import { logout } from "../store/slices/authSlice";
 import { storage } from "../util/storage";
-import { persistor } from '../store/store';
-
 
 const Settings = () => {
     const dispatch = useDispatch()
-    const navigation = useNavigation<any>()
     const [modalVisible, setModalVisible] = useState<Boolean>(false);
     const handleLogout = async () => {
         dispatch(logout())
-        storage.removeItem("loginedUser")
-        storage.setItem("IsAuthenticated", false)
-        navigation.navigate('Login')
-        await persistor.purge();
+        await storage.removeItem("loginedUser")
+        await storage.setItem("IsAuthenticated", false)
     };
 
     return (

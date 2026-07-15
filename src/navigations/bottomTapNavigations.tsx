@@ -5,8 +5,9 @@ import DashBoard from '../screens/dashBoard';
 import UserList from '../screens/userList';
 import Profile from '../screens/profile';
 import Settings from '../screens/settings';
+import { BottomTabParamList } from '../util/types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTapNavigation = () => {
     return (

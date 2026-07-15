@@ -7,9 +7,18 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
 import { regexValidation, validationErrors } from "../util/validationMsg";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { adminUser, userInfo } from "../store/slices/authSlice";
 import { storage } from "../util/storage";
+import { RootStackParamList } from "../util/types";
+import { formattedDate } from "../util/dataTime";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+type UserDataNavigationProps = NativeStackNavigationProp<RootStackParamList>
+type UserDataRouteProp = RouteProp<RootStackParamList, 'UserData'>;
+type Props = {
+    route: UserDataRouteProp;
+};
 
 const data = [
     { label: '--- Select Role ---', value: 'none' },
@@ -23,11 +32,11 @@ const styles = StyleSheet.create({
     }
 })
 
-const UserData = ({ route }: any) => {
+const UserData = ({ route }: Props) => {
     const dispatch = useDispatch()
     const admin = useSelector((state: any) => state?.auth?.loginUser)
     const users = useSelector((state: any) => state?.auth?.users)
-    const navigation = useNavigation<any>()
+    const navigation = useNavigation<UserDataNavigationProps>()
     const editUser = route?.params?.user
 
     const [user, setUser] = useState({
@@ -55,17 +64,11 @@ const UserData = ({ route }: any) => {
         }))
     }
 
-    const currentDate = new Date();
-    const day = currentDate.getDate();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`;
-
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!user?.name?.trim()) {
             Alert.alert("Validation Error", validationErrors.name.required)
         } else if (regexValidation.regex.nameRegex.test(user?.name)) {
-            Alert.alert("Validation Error", validationErrors.name.InvalidName)
+            Alert.alert("Validation Error", validationErrors.name.FullNameValidation)
         } else if (!user?.email?.trim()) {
             Alert.alert("Validation Error", validationErrors.email.required)
         } else if (!regexValidation.regex.invalidEmailRegex.test(user?.email)) {
@@ -96,8 +99,8 @@ const UserData = ({ route }: any) => {
                 const updatedAdmin = updatedUser?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
                 dispatch(adminUser(updatedAdmin))
                 dispatch(userInfo(updatedUser))
-                storage.setItem("loginedUser", updatedAdmin)
-                storage.setItem("SignupedUser", updatedUser)
+                await storage.setItem("loginedUser", updatedAdmin)
+                await storage.setItem("SignupedUser", updatedUser)
             } else {
                 const newUsers = users?.map((adminUser: any) =>
                     adminUser?.id === admin?.id ? {
@@ -116,8 +119,8 @@ const UserData = ({ route }: any) => {
                 const updatedAdminData = newUsers?.find((loginUser: { id: string }) => loginUser?.id === admin?.id);
                 dispatch(adminUser(updatedAdminData))
                 dispatch(userInfo(newUsers))
-                storage.setItem("loginedUser", updatedAdminData)
-                storage.setItem("SignupedUser", newUsers)
+                await storage.setItem("loginedUser", updatedAdminData)
+                await storage.setItem("SignupedUser", newUsers)
             }
             navigation.navigate('Home', { screen: 'Users' })
         }

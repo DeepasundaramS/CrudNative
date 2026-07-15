@@ -2,16 +2,13 @@ import { useEffect } from "react";
 import { Text, View } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../util/types";
 
-type RootStackParamList = {
-    Login: undefined;
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type LoginNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
 const SplashScreen = () => {
-    const navigation = useNavigation<NavigationProp>()
+    const navigation = useNavigation<LoginNavigationProp>()
     useEffect(() => {
         setTimeout(() => {
             navigation.replace('Login');
